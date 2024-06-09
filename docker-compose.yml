@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+
+  bot:
+    image: "den10b/tg_bot-image"
+    container_name: "${BOT_CONTAINER_NAME:-tg_bot-container}"
+    stop_signal: SIGINT
+    build:
+      context: .
+    working_dir: "/usr/src/app/${BOT_NAME:-tg_bot}"
+    volumes:
+    - .:/usr/src/app/${BOT_NAME:-tg_bot}
+    command: bash -c "sleep 10 && python bot.py"
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - ".env"
+    networks:
+    - tg_bot
+
