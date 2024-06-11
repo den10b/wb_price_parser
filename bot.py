@@ -8,12 +8,22 @@ from loguru import logger
 import config
 import handlers
 
+from models import User
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
 storage = MemoryStorage()
 main_bot = Bot(token=config.MAIN_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
 dp = Dispatcher(storage=storage)
 
 
+async def init_db() -> None:
+    mongo = AsyncIOMotorClient("mongodb://db:27017/")
+    await init_beanie(database=mongo.your_db_name, document_models=[User])
+
+
 async def on_startup():
+    await init_db()
     await asyncio.sleep(1)
 
 

@@ -1,5 +1,4 @@
 import aiohttp
-from bs4 import BeautifulSoup
 
 card_req = "https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1252448&spp=30&nm="
 
@@ -19,7 +18,6 @@ async def parse(links: list[str]) -> list[tuple[int, str]]:
                     id = int(product["id"])
                     price = product["sizes"][0]["price"]["total"]
                     res.append((id, price // 100))
-                    print(f"Цена: {price // 100} ₽")
                 except:
                     print(f"Ошибочка ((")
 
