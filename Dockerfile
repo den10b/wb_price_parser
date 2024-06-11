@@ -1,4 +1,4 @@
-FROM python:3.11.1-slim-buster
+FROM joyzoursky/python-chromedriver:3.9-alpine-selenium
 ENV BOT_NAME=$BOT_NAME
 
 WORKDIR /usr/src/app/"${BOT_NAME:-tg_bot}"
