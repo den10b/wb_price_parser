@@ -42,6 +42,10 @@ async def handler(call: types.CallbackQuery, state: FSMContext):
 
 @guest_router.callback_query(ActionCallbackFactory.filter(F.action == "register_wb"))
 async def handler(call: types.CallbackQuery, state: FSMContext):
+    try:
+        await call.message.delete_reply_markup()
+    except:
+        pass
     await state.set_state(States.input_wb_jwt)
     await call.message.answer(f"👋 Брат!\n"
                               f"Введи свой jwt:", reply_markup=await back_button())
@@ -56,6 +60,10 @@ async def handler(message: Message, state: FSMContext):
 
 @guest_router.callback_query(ActionCallbackFactory.filter(F.action == "register_ya"))
 async def handler(call: types.CallbackQuery, state: FSMContext):
+    try:
+        await call.message.delete_reply_markup()
+    except:
+        pass
     await state.set_state(States.input_ya_id)
     await call.message.answer(f"👋 Брат!\n"
                               f"Введи свой id:", reply_markup=await back_button())

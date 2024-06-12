@@ -18,8 +18,10 @@ dp = Dispatcher(storage=storage)
 
 
 async def init_db() -> None:
-    mongo = AsyncIOMotorClient("mongodb://db:27017/")
-    await init_beanie(database=mongo.your_db_name, document_models=[User])
+    docker_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@db:27017/{config.DB_NAME}?authSource=admin"
+    local_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@localhost:27777/{config.DB_NAME}?authSource=admin"
+    client = AsyncIOMotorClient(local_url)
+    await init_beanie(database=client.get_database(), document_models=[User])
 
 
 async def on_startup():

@@ -10,4 +10,4 @@ async def add_user_wb(user_id: int, wb_jwt: str):
 
 
 async def add_user_ya(user_id: int, ya_token: str, ya_id: int):
-    return await User(user_id=user_id, ya_token=ya_token, ya_id=id).insert()
+    return await User(user_id=user_id, ya_token=ya_token, ya_id=ya_id).insert()

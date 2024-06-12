@@ -16,6 +16,7 @@ class IsRegistered(BaseFilter):
             return True is self.is_registered
         return False is self.is_registered
 
+
 class IsNotRegistered(BaseFilter):
     """
     Зарегистрирован ли пользователь в боте.

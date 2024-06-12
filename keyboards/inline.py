@@ -15,3 +15,10 @@ async def back_button():
     inline_keyboard = InlineKeyboardBuilder()
     inline_keyboard.button(text="❌ Отмена", callback_data=ActionCallbackFactory(action="exit"))
     return inline_keyboard.as_markup()
+
+
+async def ok_button():
+    inline_keyboard = InlineKeyboardBuilder()
+    inline_keyboard.button(text="Подтвердить", callback_data=ActionCallbackFactory(action="confirm"))
+    inline_keyboard.button(text="❌ Отмена", callback_data=ActionCallbackFactory(action="exit"))
+    return inline_keyboard.as_markup()
