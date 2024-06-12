@@ -8,6 +8,7 @@ from filters.user import IsNotRegistered
 from keyboards.callback_factory import ActionCallbackFactory
 from keyboards.inline import register, back_button
 from utils.db import add_user_ya, add_user_wb
+from utils.wb_api import wb_check_token
 
 guest_router = Router()
 guest_router.message.filter(IsNotRegistered())
@@ -53,9 +54,19 @@ async def handler(call: types.CallbackQuery, state: FSMContext):
 
 @guest_router.message(States.input_wb_jwt)
 async def handler(message: Message, state: FSMContext):
-    await add_user_wb(message.from_user.id, message.text)
-    await message.answer(f"👋 спасибо Брат!\n"
-                         f"Ты зареган теперь как продавец на вб")
+    try:
+        is_token_valid = await wb_check_token(message.text)
+    except:
+        is_token_valid = False
+
+    if is_token_valid:
+        await add_user_wb(message.from_user.id, message.text)
+        await message.answer(f"👋 Cпасибо!\n"
+                             f"Вы зарегистрированы теперь как продавец на WB")
+        await message.answer(f"Напишите /start, чтобы скорректировать цену своего товара")
+    else:
+        await message.answer(f"К сожалению, ваш токен не подходит\n"
+                             f"Попробуйте еще раз")
 
 
 @guest_router.callback_query(ActionCallbackFactory.filter(F.action == "register_ya"))

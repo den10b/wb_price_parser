@@ -17,7 +17,7 @@ async def parse(links: list[str]) -> list[tuple[int, int]]:
                     product = (await resp.json())["data"]["products"][0]
                     id = int(product["id"])
                     price = product["sizes"][0]["price"]["total"]
-                    res.append((id, price // 100))
+                    res.append((price // 100, id))
                 except:
                     print(f"Ошибочка ((")
 
