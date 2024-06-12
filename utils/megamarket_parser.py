@@ -30,11 +30,12 @@ def trace(func):
 
         browser.quit()
         return result
+
     return wrapper
+
 
 @trace
 def parse(links: list[str], browser: WebDriver = None) -> list[tuple[int, str]]:
-
     result: list[tuple[int, str]] = []
 
     for link in links:
@@ -56,4 +57,4 @@ def parse_element(link, browser):
 
     codes = browser.find_elements(By.XPATH, "//span[@class='regular-characteristics__attr-description']")
 
-    return int(price.text.replace("₽", "").replace(" ", "")), codes[len(codes)-1].text
+    return int(price.text.replace("₽", "").replace(" ", "")), codes[len(codes) - 1].text
