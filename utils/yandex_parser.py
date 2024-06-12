@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import asyncio
 
-
+driverClosed = False
 options = wd.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_argument('--disable-gpu')
@@ -15,27 +15,31 @@ options.add_argument('--disk-cache-size=0')
 options.add_argument("--ignore-certificate-errors")
 options.add_argument("--enable-javascript")
 options.add_argument("start-maximized")
-driver = wd.Chrome(options=options)
-driver.implicitly_wait(5)
-driverClosed = False
+
+
+def start_browser():
+    driver = wd.Chrome(options=options)
+    driver.implicitly_wait(5)
+    return driver
+
 
 
 async def yandex_parser(links: list) -> list:
+    driver=start_browser()
     listProducts = []
     for link in links:
-        productInfo = await parse_link(link)
+        productInfo = await parse_link(driver,link)
         listProducts.append(productInfo)
     #print(listProducts)
     driver.quit()
     return listProducts
 
 
-async def parse_link(link: str) -> tuple:
-    global driver
-    global driverClosed
-    if driverClosed:
-        driver = wd.Chrome(options=options)
-        driver.implicitly_wait(5)
+async def parse_link(driver,link: str) -> tuple:
+    # global driverClosed
+    # if driverClosed:
+    #     driver = wd.Chrome(options=options)
+    #     driver.implicitly_wait(5)
     await asyncio.sleep(1)
     driver.get(link)
 
@@ -68,4 +72,4 @@ async def parse_link(link: str) -> tuple:
             price = 0
     productInfo['price'] = price
     #print(productInfo)
-    return productInfo
+    return (price,article)

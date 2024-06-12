@@ -14,7 +14,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 storage = MemoryStorage()
 main_bot = Bot(token=config.MAIN_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
-dp = Dispatcher(storage=storage)
+# dp = Dispatcher(storage=storage)
 
 
 async def init_db() -> None:
