@@ -8,13 +8,14 @@ from selenium.webdriver.common.by import By
 def start_browser():
     opt = webdriver.ChromeOptions()
 
-    opt.add_argument("--start-maximized")
-    opt.add_argument('window-size=2560,1440')
+    # opt.add_argument("--start-maximized")
+    # opt.add_argument('window-size=2560,1440')
 
     opt.add_argument('--disable-gpu')
 
     opt.add_argument('--no-sandbox')
-
+    opt.add_argument("--headless")
+    opt.add_argument("--disable-dev-shm-usage")
     opt.add_argument('--disk-cache-size=0')
 
     browser = webdriver.Chrome(options=opt)

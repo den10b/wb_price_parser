@@ -10,12 +10,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 driverClosed = False
 options = wd.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-options.add_argument('--disable-gpu')
+# options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disk-cache-size=0')
 options.add_argument("--ignore-certificate-errors")
 options.add_argument("--enable-javascript")
-options.add_argument("start-maximized")
+options.add_argument("--enable-javascript")
+options.add_argument("--headless")
+options.add_argument("--disable-dev-shm-usage")
+# options.add_argument("start-maximized")
 
 
 def start_browser():
