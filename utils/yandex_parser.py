@@ -35,7 +35,7 @@ async def yandex_parser(links: list) -> list:
     return listProducts
 
 
-async def parse_link(driver, link: str) -> tuple:
+async def parse_link(driver, link: str) -> tuple | None:
     await asyncio.sleep(1)
     driver.get(link)
 
