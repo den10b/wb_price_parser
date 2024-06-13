@@ -15,8 +15,10 @@ async def start_browser():
     user_agent = UserAgent()
     user_agent = user_agent.random
 
-    opt.add_argument('--no-sandbox')
+    opt.add_argument("--start-maximized")
+    opt.add_argument('window-size=2560,1440')
     opt.add_argument('--disable-gpu')
+    opt.add_argument('--no-sandbox')
     opt.add_argument(f'--user-agent={user_agent}')
 
 
@@ -26,7 +28,7 @@ async def start_browser():
     opt.add_argument('--disk-cache-size=0')
 
     browser = webdriver.Chrome(options=opt)
-    browser.implicitly_wait(10)
+    browser.implicitly_wait(20)
 
     return browser
 
