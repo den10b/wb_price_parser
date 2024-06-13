@@ -8,4 +8,4 @@ class User(Document):
     ya_token: Optional[str] = None
     ya_id:  Optional[int] = 0
     wb_jwt: Optional[str] = None
-    market: Optional[str] = None
+    market: str = None

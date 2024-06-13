@@ -1,8 +1,7 @@
 import aiohttp
-import asyncio
-from typing import List, Dict
 
-async def checkToken(business_id:str, oauth_token:str)-> bool: #проверка корректности токена
+
+async def checkToken(business_id: str, oauth_token: str) -> bool:  # проверка корректности токена
     url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings'
 
     headers = {
@@ -20,18 +19,19 @@ async def checkToken(business_id:str, oauth_token:str)-> bool: #проверка
                 print(f'Неожиданный статус: {response.status} - {await response.text()}')
                 return False
 
-async def priceProduct(business_id:str, oauth_token:str, offer_id:str)-> int: #получение цены продукта
+
+async def priceProduct(business_id: str, oauth_token: str, offer_id: str) -> int:  # получение цены продукта
     url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings'
 
     headers = {
         'Authorization': f'Bearer {oauth_token}',
         'Content-Type': 'application/json'
     }
-    data={
-    "offerIds": [
-        offer_id
-    ]
-}
+    data = {
+        "offerIds": [
+            offer_id
+        ]
+    }
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, json=data) as response:
@@ -46,38 +46,40 @@ async def priceProduct(business_id:str, oauth_token:str, offer_id:str)-> int: #�
                 print(f'Error: {response.status} - {await response.text()}')
                 return 0
 
-async def setPriceYa(ParseYa:List[Dict[str, str]], business_id:str, oauth_token:str) -> None: #функция изменения цены
-    for item in ParseYa:
+
+async def setPriceYa(item_id: str, business_id: str, oauth_token: str,
+                     new_price: int) -> bool:  # функция изменения цены
+    try:
         url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings/update'
 
         headers = {
             'Authorization': f'Bearer {oauth_token}',
             'Content-Type': 'application/json'
         }
-        newPrice = int(item["price"]) * 1.1 #повышение цены на 10 процентов
-        data ={
-                "offerMappings": [
-                    {
-                        "offer": {
-                            "offerId": item["sku"],
-                            "basicPrice": {
-                                "value": newPrice,
-                                "currencyId": "RUR"
-                            },
+        new_price = int(new_price) * 1.1  # повышение цены на 10 процентов
+        data = {
+            "offerMappings": [
+                {
+                    "offer": {
+                        "offerId": item_id,
+                        "basicPrice": {
+                            "value": new_price,
+                            "currencyId": "RUR"
                         },
-                    }
-                ]
-            }
+                    },
+                }
+            ]
+        }
 
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, json=data) as response:
                 if response.status == 200:
-                    print(f'Цена товара со sku: {item["sku"]} успешно обновлена')
+                    print(f'Цена товара со sku: {item_id} успешно обновлена')
                 else:
-                    print(f'Ошибка при обновлении цены на товар со sku: {item["sku"]}: {response.status} - {await response.text()}')
+                    print(
+                        f'Ошибка при обновлении цены на товар со sku: {item_id}: {response.status} - {await response.text()}')
+                    return False
+        return True
+    except:
+        return False
 
-
-# Запуск асинхронных функций
-asyncio.run(checkToken(business_id, oauth_token))
-asyncio.run(priceProduct(business_id, oauth_token, offer_id))
-asyncio.run(setPriceYa(product_dict,business_id, oauth_token))

@@ -7,10 +7,12 @@ import asyncio
 
 from filters.user import IsRegistered
 from keyboards.callback_factory import ActionCallbackFactory
-from keyboards.inline import ok_button
+from keyboards.inline import ok_button, back_button
 from utils.wb_parser import parse as wb_parse
 from utils.megamarket_parser import parse as mega_parse
 from utils.yandex_parser import yandex_parser as ya_parse
+from utils.ya_api import priceProduct as ya_check_current_price
+from utils.ya_api import setPriceYa as ya_change_price
 from utils.wb_api import wb_check_current_price, wb_change_price
 from utils.db import get_user
 
@@ -66,21 +68,40 @@ async def handler(message: Message, state: FSMContext):
 
 @user_router.message(States.input_my_id)
 async def handler(message: Message, state: FSMContext):
-    try:
-        nm_price = await wb_check_current_price((await get_user(message.from_user.id)).wb_jwt, message.text)
-    except:
-        nm_price = 0
+    user = await get_user(message.from_user.id)
+    if user is None:
+        await message.answer(f"Что-то пошло не так :(\n"
+                             f"Пройдите регистрацию снова")
+        await state.clear()
+        return
+    nm_price = 0
+    match user.market:
+        case "wb":
+            try:
+                nm_price = await wb_check_current_price(user.wb_jwt, message.text)
+            except:
+                pass
+        case "ya":
+            try:
+                nm_price = await ya_check_current_price(str(user.ya_id), user.ya_token, message.text)
+            except:
+                pass
+        case _:
+            await message.answer(f"Что-то пошло не так :(\n"
+                                 f"Пройдите регистрацию снова")
+            await state.clear()
+            return
 
     if nm_price:
         await message.answer(f"Супер!\n"
                              f"Текущая цена вашего товара: {nm_price}")
         await message.answer(f"Теперь отправьте ссылки на товары ваших конкурентов через пробел или запятую\n"
                              f"Сейчас мы поддерживаем только WB. Я.Маркет, Мегамаркет")
+        await state.update_data({"nm_id": message.text})
         await state.set_state(States.input_links)
-        await state.set_data({"nm_id": message.text})
     else:
         await message.answer(f"Что-то пошло не так :(\n"
-                             f"Попробуйте снова ввести ваш артикул")
+                             f"Попробуйте снова ввести ваш артикул", reply_markup=await back_button())
 
 
 @user_router.message(States.input_links)
@@ -122,7 +143,8 @@ async def handler(message: Message, state: FSMContext):
     if all_market_price_sum and all_markets_nm_count:
         rounded_mean_price = round(all_market_price_sum / all_markets_nm_count)
         await message.answer(f"Средняя цена проанализированных товаров: {rounded_mean_price:.2f}\n"
-                             f"Рекомендуемая цена: {rounded_mean_price * 0.9:.2f}₽", reply_markup=await ok_button())
+                             f"Рекомендуемая цена: {rounded_mean_price * 0.9:.2f}₽\n"
+                             f"Поменять цену вашего товара на рекомендуемую?", reply_markup=await ok_button())
         await state.update_data({"target_price": rounded_mean_price})
 
     else:
@@ -133,20 +155,40 @@ async def handler(message: Message, state: FSMContext):
 
 @user_router.callback_query(ActionCallbackFactory.filter(F.action == "confirm"))
 async def handler(call: types.CallbackQuery, state: FSMContext):
-    market = (await get_user(call.message.chat.id)).market
-    if market == 'wb':
-        wb_token = (await get_user(call.message.chat.id)).wb_jwt
-        nm_id = (await state.get_data())["nm_id"]
-        target_price = (await state.get_data())['target_price']
-        try:
-            is_accepted = await wb_change_price(wb_token, nm_id, target_price)
-        except:
-            is_accepted = False
+    user = await get_user(call.message.from_user.id)
+    if user is None:
+        await call.message.answer(f"К сожалению в бухгалтерии что-то перепутали :(\n"
+                                  f"Пройдите регистрацию снова, отправьте /start")
+        await state.clear()
+        return
 
-        if is_accepted:
-            await call.message.answer(f"Цена успешно изменена!")
-        else:
-            await call.message.answer(f"К сожалению, не получилось изменить цену товара :(\n"
-                                      f"Попробуйте снова, отправьте /start")
+    data = await state.get_data()
+    nm_id = data["nm_id"]
+    target_price = data['target_price']
+
+    match user.market:
+        case 'wb':
+            try:
+                is_accepted = await wb_change_price(wb_token=user.wb_jwt,wb_nm_id=nm_id,target_price=target_price)
+            except:
+                is_accepted = False
+
+            if is_accepted:
+                await call.message.answer(f"Цена успешно изменена!")
+            else:
+                await call.message.answer(f"К сожалению, не получилось изменить цену товара :(\n"
+                                          f"Попробуйте снова, отправьте /start")
+        case 'ya':
+            try:
+                is_accepted = await ya_change_price(item_id=nm_id,oauth_token=user.ya_token,business_id=str(user.ya_id),new_price=target_price)
+            except:
+                is_accepted = False
+            if is_accepted:
+                await call.message.answer(f"Цена успешно изменена!")
+            else:
+                await call.message.answer(f"К сожалению, не получилось изменить цену товара :(\n"
+                                          f"Попробуйте снова, отправьте /start")
+        case _:
+            await call.message.answer(f"К сожалению в бухгалтерии что-то перепутали :(\n"
+                                          f"Пройдите регистрацию снова, отправьте /start")
     await state.clear()
-
