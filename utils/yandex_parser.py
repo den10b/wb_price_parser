@@ -16,7 +16,7 @@ options.add_argument('--disk-cache-size=0')
 options.add_argument("--ignore-certificate-errors")
 options.add_argument("--enable-javascript")
 options.add_argument("--enable-javascript")
-options.add_argument("--headless")
+# options.add_argument("--headless")
 options.add_argument("--disable-dev-shm-usage")
 # options.add_argument("start-maximized")
 
