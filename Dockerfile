@@ -13,4 +13,4 @@ WORKDIR /usr/src/app/"${BOT_NAME:-tg_bot}"
 COPY requirements.txt /usr/src/app/"${BOT_NAME:-tg_bot}"
 RUN pip3 install --upgrade pip
 RUN pip3 install -r /usr/src/app/"${BOT_NAME:-tg_bot}"/requirements.txt --no-cache-dir
-COPY . /usr/src/app/"${BOT_NAME:-tg_bot}"
+COPY . /usr/src/app/"${BOT_NAME:-tg_bot}" 
