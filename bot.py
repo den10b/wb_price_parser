@@ -14,14 +14,22 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 storage = MemoryStorage()
 main_bot = Bot(token=config.MAIN_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
-# dp = Dispatcher(storage=storage)
+main_dp = Dispatcher(storage=storage)
 
 
 async def init_db() -> None:
     docker_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@db:27017/{config.DB_NAME}?authSource=admin"
     local_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@localhost:27777/{config.DB_NAME}?authSource=admin"
-    client = AsyncIOMotorClient(local_url)
-    await init_beanie(database=client.get_database(), document_models=[User])
+    try:
+        client = AsyncIOMotorClient(local_url)
+        await init_beanie(database=client.get_database(), document_models=[User])
+    except:
+        pass
+    try:
+        client = AsyncIOMotorClient(docker_url)
+        await init_beanie(database=client.get_database(), document_models=[User])
+    except:
+        pass
 
 
 async def on_startup():
@@ -30,9 +38,6 @@ async def on_startup():
 
 
 async def main():
-    main_dp = Dispatcher(storage=storage)
-
-    logger.info('Регистрирую Middlewares.')
     logger.info('Регистрирую Handlers.')
     handlers.setup(main_dp)
     logger.info('Запускаю бота.')
