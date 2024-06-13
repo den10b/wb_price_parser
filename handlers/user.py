@@ -10,6 +10,7 @@ from filters.user import IsRegistered
 from keyboards.callback_factory import ActionCallbackFactory
 from keyboards.inline import ok_button, back_button
 from utils.db import get_user
+from utils.support import chunks
 from utils.megamarket_parser import parse as mega_parse  # Влад Т
 from utils.wb_api import wb_check_current_price, wb_change_price  # Саня
 from utils.wb_parser import parse as wb_parse  # Денис
@@ -113,11 +114,22 @@ async def handler(message: Message, state: FSMContext):
             return
         sum_price = 0
 
-        await message.answer(f'Товары с {market_name}')
-        for tup in parsed_list:
+        await message.answer(f'Товары с {market_name}:')
+
+        msg = []
+
+        for index, tup in enumerate(parsed_list):
             sum_price += tup[0]
-            await message.answer(f"Артикул: {tup[1]}\n"
-                                 f"Цена: {tup[0]}₽")
+            msg.append(
+                f"🧸 Товар № {index + 1}\n"
+                f"💎 Артикул: {tup[1]}\n"
+                f"💰 Цена: {tup[0]}₽")
+
+        messages = chunks(msg, 20)
+
+        for msg in messages:
+            await message.answer("\n\n".join(msg))
+
         return sum_price, len(parsed_list)
 
     pattern = r"""(?:https?:\/\/|ftps?:\/\/|www\.)(?:(?![.,?!;:()]*(?:\s|$|"))[^\s"]){2,}"""

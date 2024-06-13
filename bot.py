@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -10,27 +11,25 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import config
 import handlers
 from models import User
-# from pyvirtualdisplay import Display
 
 storage = MemoryStorage()
 main_bot = Bot(token=config.MAIN_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
 main_dp = Dispatcher(storage=storage)
-# display = Display(visible=0, size=(1920, 1080))
-# display.start()
+
 
 async def init_db() -> None:
-    docker_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@db:27017/{config.DB_NAME}?authSource=admin"
-    local_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@localhost:27777/{config.DB_NAME}?authSource=admin"
+    #docker_url = f"mongodb://{config.DB_USER}:{config.DB_PASS}@db:27017/{config.DB_NAME}?authSource=admin"
+    local_url = f"mongodb://localhost:27017/{config.DB_NAME}"
     try:
         client = AsyncIOMotorClient(local_url)
         await init_beanie(database=client.get_database(), document_models=[User])
     except:
-        pass
-    try:
-        client = AsyncIOMotorClient(docker_url)
-        await init_beanie(database=client.get_database(), document_models=[User])
-    except:
-        pass
+        print(traceback.format_exc())
+    # try:
+    #     client = AsyncIOMotorClient(docker_url)
+    #     await init_beanie(database=client.get_database(), document_models=[User])
+    # except:
+    #     print(traceback.format_exc())
 
 
 async def on_startup():
