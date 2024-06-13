@@ -11,7 +11,7 @@ services:
     working_dir: "/usr/src/app/${BOT_NAME}-tg_bot"
     volumes:
       - .:/usr/src/app/${BOT_NAME}-tg_bot
-    command: sh -c "python3 --version && sleep 10 && python3 bot.py"
+    command: sh -c "python3 --version && python3 bot.py"
     restart: always
     depends_on:
       - db
