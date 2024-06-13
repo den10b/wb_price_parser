@@ -1,3 +1,5 @@
+import re
+
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -7,17 +9,13 @@ from aiogram.types import Message
 from filters.user import IsRegistered
 from keyboards.callback_factory import ActionCallbackFactory
 from keyboards.inline import ok_button, back_button
-
-from utils.wb_parser import parse as wb_parse # Денис
-from utils.megamarket_parser import parse as mega_parse # Влад Т
-from utils.yandex_parser import yandex_parser as ya_parse # Влад К
-from utils.ya_api import priceProduct as ya_check_current_price # Слава
-from utils.ya_api import setPriceYa as ya_change_price # Слава
-from utils.wb_api import wb_check_current_price, wb_change_price # Саня
-
 from utils.db import get_user
-
-import re
+from utils.megamarket_parser import parse as mega_parse  # Влад Т
+from utils.wb_api import wb_check_current_price, wb_change_price  # Саня
+from utils.wb_parser import parse as wb_parse  # Денис
+from utils.ya_api import priceProduct as ya_check_current_price  # Слава
+from utils.ya_api import setPriceYa as ya_change_price  # Слава
+from utils.yandex_parser import yandex_parser as ya_parse  # Влад К
 
 user_router = Router()
 user_router.message.filter(IsRegistered())
@@ -185,7 +183,7 @@ async def handler(call: types.CallbackQuery, state: FSMContext):
                 is_accepted = False
         case _:
             await call.message.answer(f"К сожалению в бухгалтерии что-то перепутали :(\n"
-                                          f"Пройдите регистрацию снова, отправьте /start")
+                                      f"Пройдите регистрацию снова, отправьте /start")
             await state.clear()
             return
     if is_accepted:

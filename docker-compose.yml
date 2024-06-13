@@ -10,7 +10,7 @@ services:
       context: .
     working_dir: "/usr/src/app/${BOT_NAME}-tg_bot"
     volumes:
-    - .:/usr/src/app/${BOT_NAME}-tg_bot
+      - .:/usr/src/app/${BOT_NAME}-tg_bot
     command: bash -c "sleep 10 && python bot.py"
     restart: always
     depends_on:
@@ -18,7 +18,7 @@ services:
     env_file:
       - ".env"
     networks:
-    - tg_bot
+      - tg_bot
 
   db:
     image: mongo:latest

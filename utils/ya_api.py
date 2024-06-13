@@ -1,7 +1,11 @@
 import aiohttp
 
 
-async def checkToken(business_id: str, oauth_token: str) -> bool:  # проверка корректности токена
+async def checkToken(business_id: str, oauth_token: str) -> bool:
+    """
+    Проверка корректности токена.
+
+    """
     url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings'
 
     headers = {
@@ -20,7 +24,11 @@ async def checkToken(business_id: str, oauth_token: str) -> bool:  # прове�
                 return False
 
 
-async def priceProduct(business_id: str, oauth_token: str, offer_id: str) -> int:  # получение цены продукта
+async def priceProduct(business_id: str, oauth_token: str, offer_id: str) -> int:
+    """
+    Получение цены продукта.
+
+    """
     url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings'
 
     headers = {
@@ -48,7 +56,11 @@ async def priceProduct(business_id: str, oauth_token: str, offer_id: str) -> int
 
 
 async def setPriceYa(item_id: str, business_id: str, oauth_token: str,
-                     new_price: int) -> bool:  # функция изменения цены
+                     new_price: int) -> bool:
+    """
+    Функция изменения цены.
+
+    """
     try:
         url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings/update'
 
@@ -56,7 +68,6 @@ async def setPriceYa(item_id: str, business_id: str, oauth_token: str,
             'Authorization': f'Bearer {oauth_token}',
             'Content-Type': 'application/json'
         }
-        new_price = int(new_price) * 1.1  # повышение цены на 10 процентов
         data = {
             "offerMappings": [
                 {
@@ -82,4 +93,3 @@ async def setPriceYa(item_id: str, business_id: str, oauth_token: str,
         return True
     except:
         return False
-

@@ -3,14 +3,13 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
+from beanie import init_beanie
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorClient
 
 import config
 import handlers
-
 from models import User
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
 
 storage = MemoryStorage()
 main_bot = Bot(token=config.MAIN_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
