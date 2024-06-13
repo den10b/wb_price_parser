@@ -3,17 +3,18 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
-import asyncio
 
 from filters.user import IsRegistered
 from keyboards.callback_factory import ActionCallbackFactory
 from keyboards.inline import ok_button, back_button
-from utils.wb_parser import parse as wb_parse
-from utils.megamarket_parser import parse as mega_parse
-from utils.yandex_parser import yandex_parser as ya_parse
-from utils.ya_api import priceProduct as ya_check_current_price
-from utils.ya_api import setPriceYa as ya_change_price
-from utils.wb_api import wb_check_current_price, wb_change_price
+
+from utils.wb_parser import parse as wb_parse # Денис
+from utils.megamarket_parser import parse as mega_parse # Влад Т
+from utils.yandex_parser import yandex_parser as ya_parse # Влад К
+from utils.ya_api import priceProduct as ya_check_current_price # Слава
+from utils.ya_api import setPriceYa as ya_change_price # Слава
+from utils.wb_api import wb_check_current_price, wb_change_price # Саня
+
 from utils.db import get_user
 
 import re
@@ -169,26 +170,28 @@ async def handler(call: types.CallbackQuery, state: FSMContext):
     match user.market:
         case 'wb':
             try:
-                is_accepted = await wb_change_price(wb_token=user.wb_jwt,wb_nm_id=nm_id,target_price=target_price)
+                is_accepted = await wb_change_price(wb_token=user.wb_jwt,
+                                                    wb_nm_id=nm_id,
+                                                    target_price=target_price)
             except:
                 is_accepted = False
-
-            if is_accepted:
-                await call.message.answer(f"Цена успешно изменена!")
-            else:
-                await call.message.answer(f"К сожалению, не получилось изменить цену товара :(\n"
-                                          f"Попробуйте снова, отправьте /start")
         case 'ya':
             try:
-                is_accepted = await ya_change_price(item_id=nm_id,oauth_token=user.ya_token,business_id=str(user.ya_id),new_price=target_price)
+                is_accepted = await ya_change_price(item_id=nm_id,
+                                                    oauth_token=user.ya_token,
+                                                    business_id=str(user.ya_id),
+                                                    new_price=target_price)
             except:
                 is_accepted = False
-            if is_accepted:
-                await call.message.answer(f"Цена успешно изменена!")
-            else:
-                await call.message.answer(f"К сожалению, не получилось изменить цену товара :(\n"
-                                          f"Попробуйте снова, отправьте /start")
         case _:
             await call.message.answer(f"К сожалению в бухгалтерии что-то перепутали :(\n"
                                           f"Пройдите регистрацию снова, отправьте /start")
+            await state.clear()
+            return
+    if is_accepted:
+        await call.message.answer(f"Цена успешно изменена!")
+    else:
+        await call.message.answer(f"К сожалению, не получилось изменить цену товара :(\n"
+                                  f"Попробуйте снова, отправьте /start")
+
     await state.clear()
