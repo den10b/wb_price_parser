@@ -3,6 +3,7 @@ import traceback
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
+from fake_useragent import UserAgent
 
 
 async def start_browser():
@@ -10,9 +11,13 @@ async def start_browser():
 
     # opt.add_argument("--start-maximized")
     # opt.add_argument('window-size=2560,1440')
+
+    user_agent = UserAgent()
+    user_agent = user_agent.random
+
     opt.add_argument('--no-sandbox')
     opt.add_argument('--disable-gpu')
-
+    opt.add_argument(f'--user-agent={user_agent}')
 
 
     # opt.add_argument('--no-sandbox')
