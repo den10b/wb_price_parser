@@ -154,7 +154,7 @@ async def handler(message: Message, state: FSMContext):
 
 @user_router.callback_query(ActionCallbackFactory.filter(F.action == "confirm"))
 async def handler(call: types.CallbackQuery, state: FSMContext):
-    user = await get_user(call.message.from_user.id)
+    user = await get_user(call.from_user.id)
     if user is None:
         await call.message.answer(f"К сожалению в бухгалтерии что-то перепутали :(\n"
                                   f"Пройдите регистрацию снова, отправьте /start")
