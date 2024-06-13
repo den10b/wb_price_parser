@@ -72,13 +72,12 @@ async def handler(message: Message, state: FSMContext):
         nm_price = 0
 
     if nm_price:
-        await state.set_data({"nm_id": message.text})
-
         await message.answer(f"Супер!\n"
                              f"Текущая цена вашего товара: {nm_price}")
         await message.answer(f"Теперь отправьте ссылки на товары ваших конкурентов через пробел или запятую\n"
                              f"Сейчас мы поддерживаем только WB. Я.Маркет, Мегамаркет")
         await state.set_state(States.input_links)
+        await state.set_data({"nm_id": message.text})
     else:
         await message.answer(f"Что-то пошло не так :(\n"
                              f"Попробуйте снова ввести ваш артикул")
@@ -124,12 +123,12 @@ async def handler(message: Message, state: FSMContext):
         rounded_mean_price = round(all_market_price_sum / all_markets_nm_count)
         await message.answer(f"Средняя цена проанализированных товаров: {rounded_mean_price:.2f}\n"
                              f"Рекомендуемая цена: {rounded_mean_price * 0.9:.2f}₽", reply_markup=await ok_button())
-        await state.set_data({"target_price": rounded_mean_price})
+        await state.update_data({"target_price": rounded_mean_price})
 
     else:
         await message.answer(f"Товары не удалось проанализироввать :(\n"
                              f"Попробуйте снова, отправьте /start")
-    await state.clear()
+        await state.clear()
 
 
 @user_router.callback_query(ActionCallbackFactory.filter(F.action == "confirm"))
