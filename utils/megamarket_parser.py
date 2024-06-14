@@ -1,18 +1,29 @@
+import asyncio
 import traceback
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
+from fake_useragent import UserAgent
+
 
 async def start_browser():
-    opt = webdriver.ChromeOptions()
 
+    user_agent = UserAgent()
+    user_agent = user_agent.random
+
+    opt = webdriver.ChromeOptions()
     opt.add_argument('--disable-gpu')
     opt.add_argument('--no-sandbox')
     opt.add_argument("--start-maximized")
-    opt.add_argument("--disable-dev-shm-usage")
     opt.add_argument('--disk-cache-size=0')
+    opt.add_argument("--ignore-certificate-errors")
+    opt.add_argument("--enable-javascript")
+    opt.add_argument("--enable-javascript")
+    opt.add_argument("--disable-dev-shm-usage")
+    opt.add_argument(f'--user-agent={user_agent}')
+
 
     browser = webdriver.Remote(
         command_executor='http://selenium-hub:4444/wd/hub',
@@ -25,6 +36,8 @@ async def start_browser():
 
 def trace(func):
     async def wrapper(*args):
+        await asyncio.sleep(15)
+
         browser = await start_browser()
 
         result = await func(*args, browser=browser)

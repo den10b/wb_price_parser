@@ -108,7 +108,10 @@ async def handler(message: Message, state: FSMContext):
     async def parse_func_call(market_name: str, links_list, parse_func):
         if not links_list:
             return
+        print(f'Запускаем функцию парсинга {market_name}')
         parsed_list = await parse_func(links_list)
+        print(f'Заончили функцию парсинга {market_name}')
+
         if not parsed_list:
             return
         sum_price = 0
