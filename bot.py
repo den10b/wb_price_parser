@@ -10,11 +10,14 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import config
 import handlers
 from models import User
+
 # from pyvirtualdisplay import Display
 
 storage = MemoryStorage()
 main_bot = Bot(token=config.MAIN_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
 main_dp = Dispatcher(storage=storage)
+
+
 # display = Display(visible=0, size=(1920, 1080))
 # display.start()
 
@@ -52,7 +55,6 @@ async def main():
 
     await main_bot.delete_webhook(drop_pending_updates=True)
     await main_dp.start_polling(main_bot)
-
 
 
 if __name__ == "__main__":

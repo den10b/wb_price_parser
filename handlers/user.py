@@ -117,7 +117,6 @@ async def handler(message: Message, state: FSMContext):
             print(f'Ошибочка в функции парсинга {market_name}')
             print(f'Error: {e}')
 
-
         if not parsed_list:
             return
         sum_price = 0

@@ -78,7 +78,6 @@ async def parse_link(driver, link: str) -> tuple | None:
 
     return price, article
 
-
 # def clear_sessions(session_id=None):
 #     url = "ttp://selenium-hub:4444"
 #     if not session_id:
@@ -93,4 +92,3 @@ async def parse_link(driver, link: str) -> tuple | None:
 #     else:
 #         # delete session from params
 #         r = requests.delete("{}/session/{}".format(url, session_id))
-

@@ -26,6 +26,7 @@ async def checkToken(business_id: str, oauth_token: str) -> bool:
     except:
         return False
 
+
 async def priceProduct(business_id: str, oauth_token: str, offer_id: str) -> int:
     """
     Получение цены продукта.

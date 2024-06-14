@@ -1,15 +1,12 @@
-import asyncio
 import traceback
 
+from fake_useragent import UserAgent
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
-from fake_useragent import UserAgent
-
 
 async def start_browser():
-
     user_agent = UserAgent()
     user_agent = user_agent.random
 
@@ -24,7 +21,6 @@ async def start_browser():
     opt.add_argument("--disable-dev-shm-usage")
     opt.add_argument(f'--user-agent={user_agent}')
 
-
     browser = webdriver.Remote(
         command_executor='http://selenium-hub:4444/wd/hub',
         options=opt,
@@ -35,7 +31,6 @@ async def start_browser():
 
 
 def trace(func):
-
     async def wrapper(*args):
         # await asyncio.sleep(15)
 
