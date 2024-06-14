@@ -26,7 +26,8 @@ class States(StatesGroup):
 async def handler(message: Message, state: FSMContext):
     await message.answer(f"👋 Привет!\n"
                          f"Пора зарегистрироваться\n"
-                         f"Где вы торгуете?", reply_markup=await register())
+                         f"Где вы торгуете?",
+                         reply_markup=await register())
     await state.clear()
 
 
@@ -50,7 +51,8 @@ async def handler(call: types.CallbackQuery, state: FSMContext):
         pass
     await state.set_state(States.input_wb_jwt)
     await call.message.answer(f"👋 Брат!\n"
-                              f"Введи свой jwt:", reply_markup=await back_button())
+                              f"Введи свой jwt:",
+                              reply_markup=await back_button())
 
 
 @guest_router.message(States.input_wb_jwt)
@@ -67,7 +69,8 @@ async def handler(message: Message, state: FSMContext):
         await message.answer(f"Напишите /start, чтобы скорректировать цену своего товара")
     else:
         await message.answer(f"К сожалению, ваш токен не подходит\n"
-                             f"Попробуйте еще раз", reply_markup=await back_button())
+                             f"Попробуйте еще раз",
+                             reply_markup=await back_button())
 
 
 @guest_router.callback_query(ActionCallbackFactory.filter(F.action == "register_ya"))
@@ -78,19 +81,22 @@ async def handler(call: types.CallbackQuery, state: FSMContext):
         pass
     await state.set_state(States.input_ya_id)
     await call.message.answer(f"👋 Хауди Хо!\n"
-                              f"Введи свой id:", reply_markup=await back_button())
+                              f"Введи свой id:",
+                              reply_markup=await back_button())
 
 
 @guest_router.message(States.input_ya_id)
 async def handler(message: Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer(f"Неверный формат!\n"
-                             f"Попробуйте еще разок:", reply_markup=await back_button())
+                             f"Попробуйте еще разок:",
+                             reply_markup=await back_button())
         return
     await state.update_data({"ya_id": message.text})
     await state.set_state(States.input_ya_token)
     await message.answer(f"👋 Спасибо!\n"
-                         f"Теперь введите свой token:", reply_markup=await back_button())
+                         f"Теперь введите свой token:",
+                         reply_markup=await back_button())
 
 
 @guest_router.message(States.input_ya_token)
@@ -108,4 +114,5 @@ async def handler(message: Message, state: FSMContext):
         await message.answer(f"Напишите /start, чтобы скорректировать цену своего товара")
     else:
         await message.answer(f"К сожалению, ваш токен не подходит\n"
-                             f"Попробуйте еще раз", reply_markup=await back_button())
+                             f"Попробуйте еще раз",
+                             reply_markup=await back_button())

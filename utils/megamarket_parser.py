@@ -5,30 +5,29 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 
-def start_browser():
+async def start_browser():
     opt = webdriver.ChromeOptions()
 
-    # opt.add_argument("--start-maximized")
-    # opt.add_argument('window-size=2560,1440')
-
     opt.add_argument('--disable-gpu')
-
     opt.add_argument('--no-sandbox')
-    opt.add_argument("--headless")
+    opt.add_argument("--start-maximized")
     opt.add_argument("--disable-dev-shm-usage")
     opt.add_argument('--disk-cache-size=0')
 
-    browser = webdriver.Chrome(options=opt)
+    browser = webdriver.Remote(
+        command_executor='http://selenium-hub:4444/wd/hub',
+        options=opt,
+    )
     browser.implicitly_wait(10)
 
     return browser
 
 
 def trace(func):
-    def wrapper(*args):
-        browser = start_browser()
+    async def wrapper(*args):
+        browser = await start_browser()
 
-        result = func(*args, browser=browser)
+        result = await func(*args, browser=browser)
 
         browser.quit()
         return result
@@ -37,7 +36,7 @@ def trace(func):
 
 
 @trace
-def parse(links: list[str], browser: WebDriver = None) -> list[tuple[int, str]]:
+async def parse(links: list[str], browser: WebDriver = None) -> list[tuple[int, str]]:
     result: list[tuple[int, str]] = []
 
     for link in links:
