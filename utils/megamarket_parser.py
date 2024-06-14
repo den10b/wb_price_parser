@@ -29,14 +29,15 @@ async def start_browser():
         command_executor='http://selenium-hub:4444/wd/hub',
         options=opt,
     )
-    browser.implicitly_wait(10)
+    browser.implicitly_wait(5)
 
     return browser
 
 
 def trace(func):
+
     async def wrapper(*args):
-        await asyncio.sleep(15)
+        # await asyncio.sleep(15)
 
         browser = await start_browser()
 

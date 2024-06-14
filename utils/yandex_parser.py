@@ -30,14 +30,21 @@ def start_browser():
 
 
 async def yandex_parser(links: list) -> list:
-    driver = start_browser()
-    listProducts = []
-    for link in links:
-        productInfo = await parse_link(driver, link)
-        if productInfo is not None:
-            listProducts.append(productInfo)
-    driver.quit()
-    return listProducts
+    for _ in range(5):
+        driver = start_browser()
+        try:
+            listProducts = []
+            for link in links:
+                productInfo = await parse_link(driver, link)
+                if productInfo is not None:
+                    listProducts.append(productInfo)
+            driver.quit()
+            return listProducts
+        except Exception as e:
+            print(f"Ошибочка: {e}")
+        driver.quit()
+
+    return []
 
 
 async def parse_link(driver, link: str) -> tuple | None:
@@ -70,3 +77,20 @@ async def parse_link(driver, link: str) -> tuple | None:
             price = 0
 
     return price, article
+
+
+# def clear_sessions(session_id=None):
+#     url = "ttp://selenium-hub:4444"
+#     if not session_id:
+#         # delete all sessions
+#         r = requests.get("{}/status".format(url))
+#         data = json.loads(r.text)
+#         for node in data['value']['nodes']:
+#             for slot in node['slots']:
+#                 if slot['session']:
+#                     id = slot['session']['sessionId']
+#                     r = requests.delete("{}/session/{}".format(url, id))
+#     else:
+#         # delete session from params
+#         r = requests.delete("{}/session/{}".format(url, session_id))
+

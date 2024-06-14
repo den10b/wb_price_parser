@@ -109,8 +109,14 @@ async def handler(message: Message, state: FSMContext):
         if not links_list:
             return
         print(f'Запускаем функцию парсинга {market_name}')
-        parsed_list = await parse_func(links_list)
-        print(f'Заончили функцию парсинга {market_name}')
+        parsed_list = ()
+        try:
+            parsed_list = await parse_func(links_list)
+            print(f'Заончили функцию парсинга {market_name}')
+        except Exception as e:
+            print(f'Ошибочка в функции парсинга {market_name}')
+            print(f'Error: {e}')
+
 
         if not parsed_list:
             return
